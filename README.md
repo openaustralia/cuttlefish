@@ -1,8 +1,8 @@
-# ![Cuttlefish](https://raw.github.com/openaustralia/cuttlefish/master/app/assets/images/cuttlefish_80x48.png) [Cuttlefish](https://cuttlefish.io) for [OpenAustralia Foundation](https://www.openaustraliafoundation.org.au)
+<!--# ![Cuttlefish](https://raw.github.com/openaustralia/cuttlefish/master/app/assets/images/cuttlefish_80x48.png) [Cuttlefish](https://cuttlefish.io) for [OpenAustralia Foundation](https://www.openaustraliafoundation.org.au)-->
 
-[![Build Status](https://travis-ci.org/openaustralia/cuttlefish.png?branch=master)](https://travis-ci.org/openaustralia/cuttlefish)
+[![Build Status](https://travis-ci.org/allthatnet/cuttlefish.png?branch=master)](https://travis-ci.org/allthatnet/cuttlefish)
 
-This is the [OpenAustralia Foundation's deployment](https://cuttlefish.oaf.org.au/) of the open source [Cuttlefish - Lovely Transactional Email](https://cuttlefish.io) project. It contains deployment-specific code like our Ansible server provisioning code. For more information on the open source project have a look at their [project site](https://cuttlefish.io) or [GitHub repo](https://github.com/mlandauer/cuttlefish).
+This is the [All That Net's fork](https://www.allthatnet.com/) of the open source [Cuttlefish - Lovely Transactional Email](https://cuttlefish.io) project to enable deployment in Centos 7 (incomplete, at this time).
 
 ## Dependencies
 Ruby 2.1.5, MySQL, Redis (2.4 or greater), Postfix
@@ -103,7 +103,7 @@ Then commit the results
 
 If you find what looks like a bug:
 
-* Check the [GitHub issue tracker](http://github.com/mlandauer/cuttlefish/issues/)
+* Check the [GitHub issue tracker](http://github.com/mlandauer/allthatnet/issues/)
   to see if anyone else has reported issue.
 * If you don't see anything, create an issue with information on how to reproduce it.
 
