@@ -1,6 +1,11 @@
 ---
 - name: Install postfix
   apt: pkg=postfix
+  when: ansible_os_family == 'Debian'
+
+- name: Install postfix
+  yum: pkg=postfix
+  when: ansible_os_family == 'RedHat'
 
 - name: Check postfix opportunistic TLS
   command: "postconf -h smtp_tls_security_level"
