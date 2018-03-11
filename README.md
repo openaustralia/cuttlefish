@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/allthatnet/cuttlefish.png?branch=master)](https://travis-ci.org/allthatnet/cuttlefish)
 
-This is the [All That Net's fork](https://www.allthatnet.com/) of the open source [Cuttlefish - Lovely Transactional Email](https://cuttlefish.io) project to enable deployment in Centos 7 (incomplete, at this time).
+This is the [All That Net's fork](https://www.allthatnet.com/) of the open source [Cuttlefish - Lovely Transactional Email](https://cuttlefish.io) project to enable deployment in Centos 7 (incomplete, at this time) and make it more generic by using custom variables.
 
 ## Dependencies
 Ruby 2.1.5, MySQL, Redis (2.4 or greater), Postfix
