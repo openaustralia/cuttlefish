@@ -1,4 +1,4 @@
-<!--# ![Cuttlefish](https://raw.github.com/openaustralia/cuttlefish/master/app/assets/images/cuttlefish_80x48.png) [Cuttlefish](https://cuttlefish.io) for [OpenAustralia Foundation](https://www.openaustraliafoundation.org.au)-->
+# ![Cuttlefish](https://raw.github.com/openaustralia/cuttlefish/master/app/assets/images/cuttlefish_80x48.png) [Cuttlefish](https://cuttlefish.io)
 
 [![Build Status](https://travis-ci.org/allthatnet/cuttlefish.png?branch=master)](https://travis-ci.org/allthatnet/cuttlefish)
 
