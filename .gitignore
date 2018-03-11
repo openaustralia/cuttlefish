@@ -20,3 +20,9 @@ db/archive
 config/newrelic.yml
 coverage
 .vagrant
+
+# Ignore Ansible Galaxy roles
+rvm_io.ruby
+ANXS.postgresql
+geerlingguy.certbot
+DavidWittman.redis
