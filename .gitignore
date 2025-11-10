@@ -36,3 +36,4 @@ postfix_log/messages
 
 # Use .ansible directory as a virtualenv if you want
 .ansible
+.keybase
