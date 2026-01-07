@@ -136,3 +136,11 @@ dependencies:
           - sharedscripts
           - postrotate reload rsyslog >/dev/null 2>&1 || true
           - endscript
+      - name: production
+        path: "/srv/www/shared/log/*.log"
+        options:
+          - daily
+          - rotate 30
+          - compress
+          - missingok
+          - copytruncate
