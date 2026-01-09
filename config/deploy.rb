@@ -8,7 +8,7 @@ require "honeybadger/capistrano" unless fetch(:local_deploy, false)
 
 set :application, "cuttlefish"
 set :repository,  "https://github.com/mlandauer/cuttlefish.git"
-set :rvm_ruby_string, :local
+set :rvm_ruby_string, File.read('.ruby-version').strip
 set :rvm_type, :system
 # The default for rvm_path is /usr/local/rvm
 set :rvm_path, "/usr/local/lib/rvm"
@@ -18,7 +18,8 @@ set :rvm_install_with_sudo, true
 if fetch(:local_deploy, false)
   server "localhost:2222", :app, :web, :db, primary: true
 else
-  server "li743-35.members.linode.com", :app, :web, :db, primary: true
+  # Linode ID: 771917, 8 GB at Fremont, CA, Created: 2014-12-11
+  server "23.239.22.35", :app, :web, :db, primary: true
 end
 
 set :use_sudo, false
@@ -26,6 +27,8 @@ set :deploy_via, :remote_cache
 
 set :user, "deploy"
 set :deploy_to, "/srv/www"
+
+set :keep_releases, 5
 
 # if you want to clean up old releases on each deploy uncomment this:
 # after "deploy:restart", "deploy:cleanup"
