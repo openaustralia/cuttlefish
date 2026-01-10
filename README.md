@@ -7,7 +7,8 @@
 
 Cuttlefish is a lovely, easy to set up transactional email server
 
-Sending a few emails from your app is easy. Sending lots becomes painful. There are so many hidden gotchas. Do your emails get delivered? Are you being considered a spammer? What about all those bounced emails?
+Sending a few emails from your app is easy. Sending lots becomes painful. There are so many hidden gotchas. Do your
+emails get delivered? Are you being considered a spammer? What about all those bounced emails?
 
 Let's make sending lots of emails fun again!
 
@@ -30,7 +31,9 @@ And without the hidden dangers of vendor lock in of commercial transactional ema
 * Postfix, which you know and trust, handles email delivery
 * Open source, so no vendor lock in.
 
-Cuttlefish is in beta. It's been used in production by [OpenAustralia Foundation](http://www.openaustraliafoundation.org.au)'s projects for many years and sends over a million emails per month.
+Cuttlefish is in beta. It's been used in production
+by [OpenAustralia Foundation](http://www.openaustraliafoundation.org.au)'s projects for many years and sends over a
+million emails per month.
 
 ## Screenshots
 
@@ -44,6 +47,7 @@ Cuttlefish is in beta. It's been used in production by [OpenAustralia Foundation
 * Incoming email
 
 ## Dependencies
+
 Ruby, PostgresQL, Redis (2.4 or greater), Postfix
 
 Also you need the following libraries:
@@ -57,17 +61,20 @@ Setting up a local development environment with all the correct dependencies and
 moving parts is now very straightforward by using [Docker](https://www.docker.com/).
 
 To start with:
+
 ```
 docker compose run web bundle exec rake db:create db:schema:load
 ```
 
-Now add some example seed data. This will also create a site admin with email "joy@smart-unlimited.com" and password "password". You'll need these details later to sign in. Skip this step if you don't want seed data.
+Now add some example seed data. This will also create a site admin with email "joy@smart-unlimited.com" and password "
+password". You'll need these details later to sign in. Skip this step if you don't want seed data.
 
 ```
 docker compose run web bundle exec rake db:seed
 ```
 
 Then
+
 ```
 docker compose up
 ```
@@ -79,7 +86,8 @@ When its stops spitting output to the console point your web browser at
 
 http://localhost:3000
 
-If you've used the `db:seed` task to populate the development database you can now log in using the email "joy@smart-unlimited.com" with the password "password".
+If you've used the `db:seed` task to populate the development database you can now log in using the email "
+joy@smart-unlimited.com" with the password "password".
 
 For development all mail sent out by Cuttlefish will actually go to mailcatcher.
 To see the mailcatcher mail:
@@ -87,13 +95,16 @@ To see the mailcatcher mail:
 http://localhost:1080
 
 To run the tests (do that from another window):
+
 ```
 docker compose exec web rake
 ```
 
 ## To install:
 
-We use [Vagrant](https://www.vagrantup.com/) and [Ansible](http://docs.ansible.com/) to automatically set up a fresh server with everything you need to run Cuttlefish. It's a fairly complicated affair as Cuttlefish does have quite a few moving
+We use [Vagrant](https://www.vagrantup.com/) and [Ansible](http://docs.ansible.com/) to automatically set up a fresh
+server with everything you need to run Cuttlefish. It's a fairly complicated affair as Cuttlefish does have quite a few
+moving
 parts but all of this is with the purpose of making it easier for the developer sending mail.
 
 These instructions are specifically for installing the server at https://cuttlefish.oaf.org.au.
@@ -102,19 +113,26 @@ Currently the setup requires a relatively old version of Ansible (2.5.0) using P
 
 ### To install to a local test virtual machine
 
-1. Create a file `~/.cuttlefish_ansible_vault_pass.txt` which contains the password for encrypting the secret values used in the deploy. The encrypted variables are at `provisioning/roles/cuttlefish-app/vars/main.yml`.
+1. Create a file `~/.cuttlefish_ansible_vault_pass.txt` which contains the password for encrypting the secret values
+   used in the deploy. The encrypted variables are at `provisioning/roles/cuttlefish-app/vars/main.yml`.
 
-2. Download base box and build virtual machine with everything needed for Cuttlefish. This will take a while (at least 30 mins or so)
+2. Download base box and build virtual machine with everything needed for Cuttlefish. This will take a while (at least
+   30 mins or so)
+
 ```
 vagrant up
 ```
 
-3. Deploy the application. As this is the first deploy it will take quite a while (5 mins or so). Further deploys will be much quicker. We're using the `--set-before local_deploy=true` flag to deploy to your local test virtual machine instead of production.
+3. Deploy the application. As this is the first deploy it will take quite a while (5 mins or so). Further deploys will
+   be much quicker. We're using the `--set-before local_deploy=true` flag to deploy to your local test virtual machine
+   instead of production.
+
 ```
 bundle exec cap --set-before local_deploy=true deploy:setup deploy:cold foreman:export foreman:start
 ```
 
 4. Add to your local `/etc/hosts` file
+
 ```
 127.0.0.1       cuttlefish.oaf.org.au
 ```
@@ -131,15 +149,19 @@ bundle exec cap --set-before local_deploy=true deploy:setup deploy:cold foreman:
 
 4. Select your new Linode in the dashboard
 
-5. Click "Deploy a Linux Distribution". Choose "Ubuntu 16.04 LTS" and choose a root password. Leave everything as default.
+5. Click "Deploy a Linux Distribution". Choose "Ubuntu 16.04 LTS" and choose a root password. Leave everything as
+   default.
 
 6. Click "Boot" and wait for it to start up
 
 8. Update `provisioning/hosts` with the name of your server (e.g. li123-45.members.linode.com)
 
-9. Create a file `~/.cuttlefish_ansible_vault_pass.txt` which contains the password for encrypting the secret values used in the deploy. The encrypted variables are at `provisioning/roles/cuttlefish-app/vars/main.yml`.
+9. Create a file `~/.cuttlefish_ansible_vault_pass.txt` which contains the password for encrypting the secret values
+   used in the deploy. The encrypted variables are at `provisioning/roles/cuttlefish-app/vars/main.yml`.
 
-10. To provision the server for the first time you will need to supply the root password you chose in step 5. On subsequent deploys you won't need this. To supply this password edit the `./provision_production.sh` script and temporily add the `--ask-pass` argument to the last command, then run the script:
+10. To provision the server for the first time you will need to supply the root password you chose in step 5. On
+    subsequent deploys you won't need this. To supply this password edit the `./provision_production.sh` script and
+    temporily add the `--ask-pass` argument to the last command, then run the script:
 
 ```
 ./provision_production.sh
@@ -147,7 +169,9 @@ bundle exec cap --set-before local_deploy=true deploy:setup deploy:cold foreman:
 
 11. Update the server name in `config/deploy.rb`
 
-12. Deploy the application. As this is the first deploy it will take quite a while (5 mins or so). Further deploys will be much quicker
+12. Deploy the application. As this is the first deploy it will take quite a while (5 mins or so). Further deploys will
+    be much quicker
+
 ```
 cap deploy:setup
 cap deploy:cold
@@ -165,13 +189,17 @@ At this point you should have a basic working setup. You should be able to send 
 
 Some further things to ensure things work smoothly
 
-1. Add DNS TXT record for cuttlefish.oaf.org.au with "v=spf1 ip4:your.server.ip4.address ip6:your.server.ip6.address -all"
+1. Add DNS TXT record for cuttlefish.oaf.org.au with "v=spf1 ip4:your.server.ip4.address ip6:your.server.ip6.address
+   -all"
 
-2. Set up incoming email for cuttlefish.oaf.org.au (In OpenAustralia Foundation's case using Google Apps for domain). Add addresses contact@cuttlefish.oaf.org.au, bounces@cuttlefish.oaf.org.au and sender@cuttlefish.oaf.org.au
+2. Set up incoming email for cuttlefish.oaf.org.au (In OpenAustralia Foundation's case using Google Apps for domain).
+   Add addresses contact@cuttlefish.oaf.org.au, bounces@cuttlefish.oaf.org.au and sender@cuttlefish.oaf.org.au
 
 2. Ensure that the devise email address is set to contact@cuttlefish.oaf.org.au
 
-3. Set up reverse DNS. In the Linode Manager under "Remote Access" click "Reverse DNS" then for the hostname put in "cuttlefish.oaf.org.au" and follow the instructions. This step is necessary in order to be able to sign up to receive [Feedback loop emails](https://en.wikipedia.org/wiki/Feedback_loop_%28email%29).
+3. Set up reverse DNS. In the Linode Manager under "Remote Access" click "Reverse DNS" then for the hostname put in "
+   cuttlefish.oaf.org.au" and follow the instructions. This step is necessary in order to be able to sign up to
+   receive [Feedback loop emails](https://en.wikipedia.org/wiki/Feedback_loop_%28email%29).
 
 ## Deploying to production
 
@@ -179,25 +207,31 @@ One gotcha is that we're still on Capistrano 2 which doesn't apply database migr
 by default on deploys.
 
 For normal deploys
+
 ```
 cap deploy
 ```
 
 To rollback a failed deploy
+
 ```
 cap deploy:rollback
 ```
 
 To deploy and run the migrations
+
 ```
 cap deploy:migrations
 ```
 
 ## Screenshots
+
 Done some development work which updates the look of the main pages? To update the screenshots
+
 ```
 bundle exec rspec spec/features/screenshot_feature.rb
 ```
+
 Then commit the results
 
 ## How to contribute
