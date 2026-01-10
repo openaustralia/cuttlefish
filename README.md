@@ -167,6 +167,11 @@ bundle exec cap --set-before local_deploy=true deploy:setup deploy:cold foreman:
 ./provision_production.sh
 ```
 
+Extra options
+  * TAGS - comma separated tags to restrict playbook to those tags
+  * SKIP_TAGS - comma separated tags to skip
+  * START_AT_TASK - task name to start from
+
 11. Update the server name in `config/deploy.rb`
 
 12. Deploy the application. As this is the first deploy it will take quite a while (5 mins or so). Further deploys will
