@@ -163,8 +163,10 @@ bundle exec cap --set-before local_deploy=true deploy:setup deploy:cold foreman:
     subsequent deploys you won't need this. To supply this password edit the `./provision_production.sh` script and
     temporily add the `--ask-pass` argument to the last command, then run the script:
 
+    Add `--check` to do a dry run and `--diff` as well to see the changes.
+
 ```
-./provision_production.sh
+[VAR=value] ./provision_production.sh [--check [--diff]]
 ```
 
 Extra options
