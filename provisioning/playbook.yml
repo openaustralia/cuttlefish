@@ -19,5 +19,5 @@
   become: true
   #user: root
   roles:
-    - { role: deploy-user, github_users: ['mlandauer', 'henare', 'jamezpolley', 'ianheggie-oaf'], tags: ['deploy-user'] }
+    - { role: deploy-user, tags: ['deploy-user'] }
     - { role: cuttlefish-app, tags: ['cuttlefish-app'] }
