@@ -1,30 +1,35 @@
 ---
 - name: Install postfix
   apt: pkg=postfix
+  tags: ['postfix']
 
 - name: Configure postfix logs to go to their own directory
   copy:
     src: 50-default.conf
     dest: /etc/rsyslog.d
   notify: restart rsyslog
+  tags: ['postfix']
 
 - name: Check postfix opportunistic TLS
   command: "postconf -h smtp_tls_security_level"
   changed_when: False
   register: postfix_smtp_tls_security_level
   check_mode: no
+  tags: ['postfix']
 
 - name: Enable postfix opportunistic TLS for encrypted outbound email
   command: postconf -e smtp_tls_security_level=may
   when: postfix_smtp_tls_security_level.stdout != "may"
   notify:
     - restart postfix
+  tags: ['postfix']
 
 - name: Check protocols used for sending emails
   command: "postconf -h inet_protocols"
   changed_when: False
   register: postfix_inet_protocols
   check_mode: no
+  tags: ['postfix']
 
 # See https://www.linode.com/community/questions/19723/changing-ipv6-address-to-new-64-subnet
 # This is a workaround for the problem where the /64 IPv6 block that we're using
@@ -35,3 +40,4 @@
   when: postfix_inet_protocols.stdout != "ipv4"
   notify:
     - restart postfix
+  tags: ['postfix']

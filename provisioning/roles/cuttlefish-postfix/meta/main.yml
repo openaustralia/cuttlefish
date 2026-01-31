@@ -122,6 +122,7 @@ galaxy_info:
   #- web
 dependencies:
   - role: nickhammond.logrotate
+    tags: ['logrotate', 'cuttlefish']
     logrotate_scripts:
       - name: mail
         path: /var/log/mail/mail.log
