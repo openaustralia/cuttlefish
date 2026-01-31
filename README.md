@@ -160,19 +160,18 @@ bundle exec cap --set-before local_deploy=true deploy:setup deploy:cold foreman:
    used in the deploy. The encrypted variables are at `provisioning/roles/cuttlefish-app/vars/main.yml`.
 
 10. To provision the server for the first time you will need to supply the root password you chose in step 5. On
-    subsequent deploys you won't need this. To supply this password edit the `./provision_production.sh` script and
-    temporily add the `--ask-pass` argument to the last command, then run the script:
+    subsequent deploys you won't need this. To supply this password run 
 
-    Add `--check` to do a dry run and `--diff` as well to see the changes.
+    ./provision_production.sh --ask-pass
 
-```
-[VAR=value] ./provision_production.sh [--check [--diff]]
-```
+    # Yopu can also add `--check` to do a dry run and `--diff` as well to see the changes.
 
-Extra options
-  * TAGS - comma separated tags to restrict playbook to those tags
-  * SKIP_TAGS - comma separated tags to skip
-  * START_AT_TASK - task name to start from
+    [VAR=value] ./provision_production.sh [--check [--diff]]
+
+ENV Variables:
+  * `TAGS` - comma separated tags to restrict playbook to those tags
+  * `SKIP_TAGS` - comma separated tags to skip
+  * `START_AT_TASK` - task name to start from
 
 11. Update the server name in `config/deploy.rb`
 
