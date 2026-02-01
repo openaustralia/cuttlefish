@@ -2,12 +2,14 @@
 - hosts: all
   become: true
   gather_facts: False
+  tags: ['python']
   tasks:
   - name: install python 2 (or python 3 on Ubuntu 20.04)
     raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal) || apt install -y python-is-python3
     changed_when: False
 
 - hosts: all
+  tags: ['verify']
   pre_tasks:
     - name: Verify Ansible meets version requirements.
       assert:
