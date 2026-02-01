@@ -22,6 +22,7 @@ config/newrelic.yml
 coverage
 .vagrant
 
+# Keep in sync with provisioning/requirements.yml and provision_production.sh
 provisioning/roles/newrelic.newrelic-infra
 provisioning/roles/rvm.ruby
 provisioning/roles/geerlingguy.certbot
