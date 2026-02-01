@@ -104,12 +104,12 @@ docker compose exec web rake
 
 We use [Vagrant](https://www.vagrantup.com/) and [Ansible](http://docs.ansible.com/) to automatically set up a fresh
 server with everything you need to run Cuttlefish. It's a fairly complicated affair as Cuttlefish does have quite a few
-moving
-parts but all of this is with the purpose of making it easier for the developer sending mail.
+moving parts but all of this is with the purpose of making it easier for the developer sending mail.
 
 These instructions are specifically for installing the server at https://cuttlefish.oaf.org.au.
 
-Currently the setup requires a relatively old version of Ansible (2.5.0) using Python 2.7.
+Previously, the control node setup required a relatively old version of Ansible (2.5.0) using Python 2.7.
+This is being updated.
 
 ### To install to a local test virtual machine
 
@@ -160,7 +160,7 @@ bundle exec cap --set-before local_deploy=true deploy:setup deploy:cold foreman:
    used in the deploy. The encrypted variables are at `provisioning/roles/cuttlefish-app/vars/main.yml`.
 
 10. To provision the server for the first time you will need to supply the root password you chose in step 5. On
-    subsequent deploys you won't need this. To supply this password run 
+    subsequent deploys you won't need this. To supply this password run
 
     ./provision_production.sh --ask-pass
 
@@ -169,9 +169,10 @@ bundle exec cap --set-before local_deploy=true deploy:setup deploy:cold foreman:
     [VAR=value] ./provision_production.sh [--check [--diff]]
 
 ENV Variables:
-  * `TAGS` - comma separated tags to restrict playbook to those tags
-  * `SKIP_TAGS` - comma separated tags to skip
-  * `START_AT_TASK` - task name to start from
+
+* `TAGS` - comma separated tags to restrict playbook to those tags
+* `SKIP_TAGS` - comma separated tags to skip
+* `START_AT_TASK` - task name to start from
 
 11. Update the server name in `config/deploy.rb`
 
@@ -206,6 +207,19 @@ Some further things to ensure things work smoothly
 3. Set up reverse DNS. In the Linode Manager under "Remote Access" click "Reverse DNS" then for the hostname put in "
    cuttlefish.oaf.org.au" and follow the instructions. This step is necessary in order to be able to sign up to
    receive [Feedback loop emails](https://en.wikipedia.org/wiki/Feedback_loop_%28email%29).
+
+### Clobbering provisioning artefacts
+
+To clobber the venv dir (`.ansible`), and remove the roles that are dynamically downloaded and listed in `.gitignore`,
+run
+
+    ./provision_production.sh clobber
+
+You should run this if you change:
+
+* `provisioning/requirements.txt` - python3 packages
+* `provisioning/requirements.yml` - ansible roles downloaded rather than committed to git
+* The version of python3 installed on your system
 
 ## Deploying to production
 
