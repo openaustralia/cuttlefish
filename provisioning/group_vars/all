@@ -1,0 +1,11 @@
+# group_vars/all
+---
+github_users:
+  - 'br3nda'
+  - 'henare'
+  - 'ianheggie-oaf'
+  - 'jamezpolley'
+  - 'mlandauer'
+  - 'simonzippy'
+  - 'benrfairless'
+

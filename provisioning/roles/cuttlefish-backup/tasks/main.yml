@@ -5,24 +5,29 @@
     pkg:
       - duplicity
       - mailutils
+  tags: [ 'apt', 'backup' ]
 
 - name: Ensure git is installed
   apt:
     pkg: git
     update_cache: yes
+  tags: [ 'apt', 'backup' ]
 
 - name: Clone database-backup repository
   git:
     repo: https://github.com/openaustralia/database-backup.git
     dest: /root/database-backup
+  tags: [ 'backup' ]
 
 - name: Copy database-backup configuration
   template:
     src: duplicity-backup.conf
     dest: /root/database-backup/duplicity-backup.conf
+  tags: [ 'backup' ]
 
 - name: Configure backup cronjob
   cron:
     name: backup
     job: /root/database-backup/database-backup.sh
     special_time: daily
+  tags: [ 'backup' ]

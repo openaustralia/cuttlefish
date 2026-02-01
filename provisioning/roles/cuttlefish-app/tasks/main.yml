@@ -1,36 +1,46 @@
 ---
+
+# NOTE: provisioning/roles/cuttlefish-app/meta/main.yml has prerequisites that run first
+# and does a fair bit of work, not just establish common libraries to call!
+
 - name: Remove apache2
   apt:
     name: apache2
     state: absent
+  tags: ['nginx', 'apt']
 
 - name: Install nginx
   apt:
     pkg:
       - nginx
     state: present
+  tags: ['nginx', 'apt']
 
 - name: Add key for passenger
   apt_key:
     url: http://keyserver.ubuntu.com/pks/lookup?op=get&fingerprint=on&search=0xAC40B2F7
     state: present
+  tags: ['nginx']
 
 - name: Apt via https
   apt:
     name: apt-transport-https
     state: present
+  tags: ['nginx', 'passenger', 'apt']
 
 - name: Apt add passenger to list
   apt_repository:
     repo: 'deb https://oss-binaries.phusionpassenger.com/apt/passenger {{ansible_distribution_release}} main'
     state: present
     update_cache: yes
+  tags: ['nginx', 'passenger', 'apt']
 
 - name: Install passenger
   apt:
     pkg:
       - libnginx-mod-http-passenger
     state: present
+  tags: ['nginx', 'passenger', 'apt']
 
 - name: Ensure that deploy owns /srv/www
   file:
@@ -38,6 +48,7 @@
     group: deploy
     path: /srv/www
     state: directory
+  tags: ['app']
 
 - name: Ensure that /srv/www/shared exists
   file:
@@ -45,18 +56,22 @@
     owner: deploy
     group: deploy
     state: directory
+  tags: ['app']
 
 - name: Ensure git is installed
   apt:
     pkg: git
+  tags: ['apt']
 
 - name: Add postgresql apt signing key
   apt_key:
     url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+  tags: ['postgresql', 'apt']
 
 - name: Add postgresql apt repository
   apt_repository:
     repo: deb http://apt.postgresql.org/pub/repos/apt focal-pgdg main
+  tags: ['postgresql', 'apt']
 
 - name: Install postgresql 13
   apt:
@@ -65,6 +80,7 @@
       - postgresql-client-13
       - libpq-dev
     update_cache: yes
+  tags: ['postgresql', 'apt']
 
 - name: Trust local database access
   template:
@@ -72,6 +88,7 @@
     dest: /etc/postgresql/13/main/pg_hba.conf
     owner: postgres
     group: postgres
+  tags: ['postgresql', 'apt']
 
 # We want the restart to happen immediately so that postgresl will be available
 # for later tasks
@@ -79,17 +96,20 @@
   service:
     name: postgresql
     state: restarted
+  tags: ['postgresql', 'apt']
 
 - name: Make sure the right version of postgresql starts at boot
   systemd:
     state: started
     name: postgresql@13-main
+  tags: ['postgresql', 'apt']
 
 # Installing via bash so that rvm is used. Otherwise would install gems for default system ruby
 - name: Install bundler gem
   command: bash -lc "gem install bundler --version 2.3.26"
   args:
     creates: "/usr/local/lib/rvm/gems/ruby-3.0.6/gems/bundler-2.3.26"
+  tags: ['ruby', 'rvm']
 
 - name: Install package dependencies that allow gem native extensions to be built
   apt:
@@ -98,6 +118,7 @@
       - g++
       # Required for encryption in eventmachine
       - libssl-dev
+  tags: ['ruby', 'apt']
 
 - name: Ensure that .env exists
   template:
@@ -106,6 +127,7 @@
     owner: deploy
     group: deploy
   notify: nginx restart
+  tags: ['app']
   # TODO: Should also restart the log daemon
 
 - name: Directory to hold configs for ssl on tracking links
@@ -114,6 +136,7 @@
     owner: deploy
     group: deploy
     state: directory
+  tags: ['nginx']
 
 - name: Directory to hold nginx configs for ssl on tracking links
   file:
@@ -121,12 +144,14 @@
     owner: deploy
     group: deploy
     state: directory
+  tags: ['nginx']
 
 - name: Generate the overall nginx config
   template:
     src: nginx.conf
     dest: /etc/nginx/nginx.conf
   notify: nginx reload
+  tags: ['nginx']
 
 - name: Generate the nginx config for the app
   template:
@@ -136,14 +161,17 @@
     group: root
     mode: "644"
   notify: nginx reload
+  tags: ['nginx']
 
 - name: Install python module requirement for ansible creating postgresql db
   apt:
     pkg: python3-psycopg2
+  tags: ['postgresql', 'apt']
 
 - name: Create cuttlefish postgresql database
   postgresql_db:
     name: cuttlefish
+  tags: ['postgresql']
 
 - name: Create cuttlefish posgresql role
   postgresql_user:
@@ -151,11 +179,13 @@
     name: cuttlefish
     password: "{{ db_password }}"
     encrypted: yes
+  tags: ['postgresql']
 
 - name: Create postgresql role for root so it can do backups
   postgresql_user:
     name: root
     role_attr_flags: SUPERUSER
+  tags: ['postgresql']
 
 - name: Copy over database configuration for application
   template:
@@ -164,6 +194,7 @@
     owner: deploy
     group: deploy
   notify: nginx restart
+  tags: ['app']
 
 - name: Allow deploy user to export foreman script
   lineinfile:
@@ -171,6 +202,7 @@
     state: present
     line: 'deploy ALL=(ALL) NOPASSWD: /usr/local/lib/rvm/wrappers/default/bundle exec foreman export systemd /etc/systemd/system -a cuttlefish -u deploy -l /srv/www/shared/log -f Procfile.production'
     validate: 'visudo -cf %s'
+  tags: ['app']
 
 - name: Allow deploy user to reload systemd daemon after changing config
   lineinfile:
@@ -178,6 +210,7 @@
     state: present
     line: 'deploy ALL=(ALL) NOPASSWD: /bin/systemctl daemon-reload'
     validate: 'visudo -cf %s'
+  tags: ['app']
 
 - name: Allow deploy user to start cuttlefish service
   lineinfile:
@@ -185,6 +218,7 @@
     state: present
     line: 'deploy ALL=(ALL) NOPASSWD: /bin/systemctl start cuttlefish.target'
     validate: 'visudo -cf %s'
+  tags: ['app']
 
 - name: Allow deploy user to stop cuttlefish service
   lineinfile:
@@ -192,6 +226,7 @@
     state: present
     line: 'deploy ALL=(ALL) NOPASSWD: /bin/systemctl stop cuttlefish.target'
     validate: 'visudo -cf %s'
+  tags: ['app']
 
 - name: Allow deploy user to restart cuttlefish service
   lineinfile:
@@ -199,6 +234,7 @@
     state: present
     line: 'deploy ALL=(ALL) NOPASSWD: /bin/systemctl restart cuttlefish.target'
     validate: 'visudo -cf %s'
+  tags: ['app']
 
 - name: Allow deploy user to check the nginx configuration
   lineinfile:
@@ -206,6 +242,7 @@
     state: present
     line: 'deploy ALL=(ALL) NOPASSWD: /usr/sbin/service nginx configtest'
     validate: 'visudo -cf %s'
+  tags: ['app']
 
 - name: Allow deploy user to reload the nginx configuration
   lineinfile:
@@ -213,17 +250,20 @@
     state: present
     line: 'deploy ALL=(ALL) NOPASSWD: /usr/sbin/service nginx reload'
     validate: 'visudo -cf %s'
+  tags: ['app']
 
 - name: Allow deploy to read some log files (different from admin group)
   user:
     name: deploy
     groups: adm
     append: yes
+  tags: ['app']
 
 - name: Install certbot
   apt:
     pkg: certbot
     update_cache: yes
+  tags: ['nginx']
 
 # We need this for the next step (which needs to happen before certbot runs
 # the first time)
@@ -232,6 +272,7 @@
     path: /etc/letsencrypt/renewal-hooks/deploy
     state: directory
     mode: "0755"
+  tags: ['cuttlefish']
 
 # Note that we're doing this before the certificate is generated because we want
 # the new certificate copied across immediately. But the slight hassle is we
@@ -242,6 +283,7 @@
     src: copy-cuttlefish-daemon-certs.sh
     dest: /etc/letsencrypt/renewal-hooks/deploy/copy-cuttlefish-daemon-certs
     mode: 755
+  tags: ['cuttlefish']
 
 - name: Install certificate using certbot
   include_role:
@@ -257,7 +299,7 @@
         domains:
           - cuttlefish.oaf.org.au
           - cuttlefish.io
-
+  tags: ['cuttlefish']
 
 - name: Daily archiving and deny list removal tasks
   cron:
@@ -266,3 +308,4 @@
     user: deploy
     minute: "0"
     hour: "12"
+  tags: ['cuttlefish']
