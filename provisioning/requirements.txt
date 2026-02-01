@@ -1,3 +1,5 @@
+# Automatically installed by provision_production.sh
+#
 # Install the correct version of ansible (best to do in a virtual
 # environment) with:
 # cd provisioning

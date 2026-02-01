@@ -1,3 +1,5 @@
+# Automatically installed by provision_production.sh
+#
 # Install required roles with
 # cd provisioning
 # ansible-galaxy install -r requirements.yml -p roles
