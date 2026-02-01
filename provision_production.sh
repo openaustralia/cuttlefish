@@ -74,4 +74,5 @@ case "$START_AT_TASK" in
     ;;
 esac
 
+set -x
 ansible-playbook -i "$PROVISIONING_DIR/hosts" "$PROVISIONING_DIR/playbook.yml" $extra_args "$@"
