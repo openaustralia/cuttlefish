@@ -3,4 +3,19 @@
 # cd provisioning
 # pip install -r requirements.txt
 
-ansible==2.8.17
+# Ansible 8.7.0 uses ansible-core 2.15.13,
+# Control node: Python 3.9 to 3.11 supported (NOT 3.12 officially, but works in practice)
+#   Otherwise mac OS/X users would need to upgrade their python using homebrew etc
+# Target: Python 2.7, Python 3.5 to 3.11
+# * cuttlefish has, as of 31 Jan 2026: Python 2.7.18 and 3.8.10
+# ansible 8.7 has the ansible-galaxy SSL bug fix which is needed for python 3.12
+# (was ansible==2.8.17, tried 2.9.27, 5.10.0, 6.7.0)
+ansible==8.7.0
+
+# Consider:
+# Ansible 9.11.0 uses ansible-core 2.16.14
+# Control node: Python 3.10-3.12 officially supported
+# Target node: Python 2.7, Python 3.6-3.12
+# * cuttlefish has, as of 31 Jan 2026: Python 2.7.18 and 3.8.10
+# (was ansible==2.8.17, tried 2.9.27, 5.10.0, 6.7.0, 8.7.0)
+# ansible==9.11.0
