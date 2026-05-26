@@ -101,6 +101,8 @@ GEM
       net-sftp (>= 2.0.0)
       net-ssh (>= 2.0.14)
       net-ssh-gateway (>= 1.1.0)
+    capistrano-tagging (0.1.0)
+      capistrano (~> 2.0)
     capybara (3.39.2)
       addressable
       matrix
@@ -550,6 +552,7 @@ DEPENDENCIES
   bcrypt_pbkdf (~> 1.0)
   bootstrap-sass (~> 2.0)
   capistrano (~> 2)
+  capistrano-tagging
   capybara
   climate_control
   coderay
