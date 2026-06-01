@@ -106,6 +106,7 @@ gem "acme-client"
 
 group :development do
   gem "capistrano", "~> 2"
+  gem "capistrano-tagging"
   gem "bcrypt_pbkdf", "~> 1.0"
   gem "ed25519", "~> 1.2"
   gem "faker"
