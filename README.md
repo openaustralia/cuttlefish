@@ -60,31 +60,23 @@ For development, however, the only dependencies are Docker and Docker compose.
 Setting up a local development environment with all the correct dependencies and
 moving parts is now very straightforward by using [Docker](https://www.docker.com/).
 
-To start with:
+To start:
 
 ```
-docker compose run web bundle exec rake db:create db:schema:load
+make up
 ```
 
-Now add some example seed data. This will also create a site admin with email "joy@smart-unlimited.com" and password "
-password". You'll need these details later to sign in. Skip this step if you don't want seed data.
+That builds the containers, sets up the database and starts everything, which takes a while the first time. Then
+point your web browser at http://localhost:3000. Run `make` to see the other targets, such as `make logs`, `make down`,
+`make clean` and `make clobber`. If a port is already in use, or you run more than one worktree at once, see
+[AGENTS.md](AGENTS.md#port-clashes).
+
+To add some example seed data, which also creates a site admin with email "joy@smart-unlimited.com" and password
+"password":
 
 ```
-docker compose run web bundle exec rake db:seed
+docker compose exec web bundle exec rake db:seed
 ```
-
-Then
-
-```
-docker compose up
-```
-
-Those steps will take a little while as they download images and build
-the docker containers.
-
-When its stops spitting output to the console point your web browser at
-
-http://localhost:3000
 
 If you've used the `db:seed` task to populate the development database you can now log in using the email "
 joy@smart-unlimited.com" with the password "password".
@@ -99,6 +91,21 @@ To run the tests (do that from another window):
 ```
 docker compose exec web rake
 ```
+
+## If the app won't start
+
+Startup fails loudly on purpose, so a broken setup gets noticed instead of hiding behind a container that looks fine.
+If setup fails, or takes longer than `START_LIMIT` (5 minutes here, set in `.devcontainer/compose.yaml`), the `web`
+container stops, `make up` reports the failure, and the dev container shows an error instead of opening.
+
+To fix it:
+
+1. `make status` shows which container stopped, and `make logs SERVICE=web` shows why.
+2. `make shell` opens a shell in a fresh `web` container even when it has stopped, so you can rerun the setup by hand
+   and fix the problem.
+3. `make up`, or reopen the dev container, to start again.
+
+On a slow machine, a longer limit can go in `.env`, for example `START_LIMIT=20m`.
 
 ## To install:
 
