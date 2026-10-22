@@ -16,6 +16,9 @@ make services-up  # everything except `web`
 make status       # each container's health and host ports
 make logs         # follow the logs (SERVICE=<name> for one container)
 make shell        # a shell in the app container, or a fresh one if it has stopped
+make test         # the specs, after resetting the test database (ARGS=spec/models/app_spec.rb:42 to narrow)
+make lint         # RuboCop (ARGS=<paths> to narrow)
+make console      # a Rails console
 make down         # stop and remove the containers, keeping the data
 make clean        # also remove built images and dependencies, so the next start rebuilds; keeps the data
 make clobber      # also remove the data, and prune unused Docker images and cache machine-wide
@@ -25,9 +28,9 @@ make clobber      # also remove the data, and prune unused Docker images and cac
 A start that takes longer than `START_LIMIT` (in `.devcontainer/compose.yaml`) counts as failed, and stops loudly on purpose;
 see "If the app won't start" in the README.
 
-Development runs entirely in Docker; `config/database.yml` points at the `db` container. The `web` container prepares
-the database before Rails starts. Committed development settings live in `.devcontainer/app.env`, which the app
-containers load; your own `.env` overrides them.
+Development runs entirely in Docker, so there's no `make setup`: `make up` does it. `config/database.yml` points at
+the `db` container. The `web` container prepares the database before Rails starts. Committed development settings live
+in `.devcontainer/app.env`, which the app containers load; your own `.env` overrides them.
 
 ### Port clashes
 

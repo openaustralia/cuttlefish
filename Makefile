@@ -1,10 +1,13 @@
-.PHONY: help up services-up down clean clobber status logs shell
+.PHONY: help up services-up down clean clobber status logs shell test lint console
 
 help: ## Show this help (the default target)
 	@grep -hE '^[a-zA-Z0-9_.-]+:.*## ' $(MAKEFILE_LIST) | \
 	  awk 'BEGIN {FS = ":.*## "}; {printf "  %-12s %s\n", $$1, $$2}'
 
 # The stack is defined in .devcontainer/compose.yaml (see "Docker development environment" in AGENTS.md).
+# Runs a command in the web container, or in a fresh one if it has stopped
+in_web = if [ -n "$$(docker compose ps -q --status running web)" ]; then docker compose exec web $(1); else docker compose run --rm web $(1); fi
+
 # --wait returns once every service passes its healthcheck, so the next command can use them straight away.
 up: ## Start everything, including the app at http://localhost:3000, once it's ready
 	docker compose up --build --wait -d
@@ -15,7 +18,7 @@ down: ## Stop and remove the containers, keeping the data
 # Everything this checkout built, so the next `make up` rebuilds from scratch. The data is kept.
 # VS Code's dev container builds its own images on top of compose's. Only this project's containers say which
 # they are, so they're noted before `down` removes them.
-clean: ## Remove containers, built images (VS Code's too), logs and tmp, keeping the data
+clean: ## Remove containers, built images (VS Code's too), logs, tmp and coverage, keeping the data
 	p=$$(docker compose config | sed -n 's/^name: //p'); \
 	vsc=$$(docker ps -a --filter "label=com.docker.compose.project=$$p" --format '{{.Image}}' | grep '^vsc-' | sort -u); \
 	docker compose down --remove-orphans --rmi local && \
@@ -32,4 +35,11 @@ status: ## Show each container's health and the host ports it's published on
 logs: ## Follow the logs of every container (or SERVICE=web for one)
 	docker compose logs -f $(SERVICE)
 shell: ## Open a shell in the web container, or in a fresh one if it has stopped (e.g. after a failed start)
-	@if [ -n "$$(docker compose ps -q --status running web)" ]; then docker compose exec web bash; else docker compose run --rm web bash; fi
+	@$(call in_web,bash)
+# Loads the schema into a fresh test database, as `db:prepare` would run every migration and an old one fails
+test: ## Run the specs, after resetting the test database (ARGS=spec/models/x_spec.rb:42 to narrow)
+	@$(call in_web,bash -c 'RAILS_ENV=test DISABLE_DATABASE_ENVIRONMENT_CHECK=1 bin/rails db:drop db:create db:schema:load && bundle exec rspec $(ARGS)')
+lint: ## Run RuboCop (ARGS=<paths> to narrow)
+	@$(call in_web,bundle exec rubocop $(ARGS))
+console: ## Open a Rails console in the web container
+	@$(call in_web,bin/rails console)

@@ -86,11 +86,14 @@ To see the mailcatcher mail:
 
 http://localhost:1080
 
-To run the tests (do that from another window):
+To run the tests and RuboCop, in the `web` container (started if it isn't running):
 
 ```
-docker compose exec web rake
+make test
+make lint
 ```
+
+`make test` resets the test database first. `ARGS=spec/models/app_spec.rb` runs just one file.
 
 ## If the app won't start
 
