@@ -30,7 +30,8 @@ see "If the app won't start" in the README.
 
 Development runs entirely in Docker, so there's no `make setup`: `make up` does it. `config/database.yml` points at
 the `db` container. The `web` container prepares the database before Rails starts. Committed development settings live
-in `.devcontainer/app.env`, which the app containers load; your own `.env` overrides them.
+in `.devcontainer/app.env`, which the app containers load. A root `.env` can't override them, as Compose only uses it
+to fill in the compose file (ports and `START_LIMIT`), and dotenv never replaces a variable that's already set.
 
 ### Port clashes
 
@@ -45,5 +46,5 @@ it however you start the stack. Containers and data are named `cuttlefish` (`nam
 this repo, such as a worktree, shares them unless its `.env` also sets its own `COMPOSE_PROJECT_NAME`. For
 host-side commands to see the same values, put `dotenv` in a gitignored `.envrc` if you use direnv, or
 run `set -a; . ./.env; set +a`. Services you rarely need from the host get a random port, which `make status` shows.
-To see what holds a port, use `ss -ltnp | grep 3306` (Linux) or `lsof -iTCP:3306 -sTCP:LISTEN` (macOS); a database
-server installed on the host is the usual culprit.
+To see what holds a port, use `ss -ltnp | grep 3000` (Linux) or `lsof -iTCP:3000 -sTCP:LISTEN` (macOS); another app or Docker
+stack is the usual culprit.

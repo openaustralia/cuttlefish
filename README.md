@@ -1,6 +1,6 @@
 # ![Cuttlefish](https://raw.github.com/mlandauer/cuttlefish/master/app/assets/images/cuttlefish_80x48.png) Cuttlefish
 
-[![Build Status](https://travis-ci.com/mlandauer/cuttlefish.svg?branch=master)](https://travis-ci.com/mlandauer/cuttlefish) [![Coverage Status](https://coveralls.io/repos/github/mlandauer/cuttlefish/badge.svg?branch=master)](https://coveralls.io/github/mlandauer/cuttlefish?branch=master) [![Maintainability](https://api.codeclimate.com/v1/badges/abe94fb0811e8e8c512a/maintainability)](https://codeclimate.com/github/mlandauer/cuttlefish/maintainability)
+[![Coverage Status](https://coveralls.io/repos/github/mlandauer/cuttlefish/badge.svg?branch=master)](https://coveralls.io/github/mlandauer/cuttlefish?branch=master) [![Maintainability](https://api.codeclimate.com/v1/badges/abe94fb0811e8e8c512a/maintainability)](https://codeclimate.com/github/mlandauer/cuttlefish/maintainability)
 
 * Project site: [cuttlefish.io](https://cuttlefish.io)
 * Github repo:  [github.com/mlandauer/cuttlefish](https://github.com/mlandauer/cuttlefish)
@@ -98,12 +98,13 @@ make lint
 ## If the app won't start
 
 Startup fails loudly on purpose, so a broken setup gets noticed instead of hiding behind a container that looks fine.
-If setup fails, or takes longer than `START_LIMIT` (5 minutes here, set in `.devcontainer/compose.yaml`), the `web`
-container stops, `make up` reports the failure, and the dev container shows an error instead of opening.
+If setup fails, the `web` container stops. If it takes longer than `START_LIMIT` (5 minutes here, set in
+`.devcontainer/compose.yaml`), it's marked unhealthy. Either way `make up` reports the failure, and so does the dev
+container.
 
 To fix it:
 
-1. `make status` shows which container stopped, and `make logs SERVICE=web` shows why.
+1. `make status` shows which container stopped or is unhealthy, and `make logs SERVICE=web` shows why.
 2. `make shell` opens a shell in a fresh `web` container even when it has stopped, so you can rerun the setup by hand
    and fix the problem.
 3. `make up`, or reopen the dev container, to start again.

@@ -11,7 +11,9 @@ in_web = if [ -n "$$(docker compose ps -q --status running web)" ]; then docker 
 # --wait returns once every service passes its healthcheck, so the next command can use them straight away.
 up: ## Start everything, including the app at http://localhost:3000, once it's ready
 	docker compose up --build --wait -d
+# Only web prepares the database as it starts, so this does it first
 services-up: ## Start everything except web
+	docker compose build web && docker compose run --rm web bin/rails db:prepare
 	docker compose up --build --wait -d db redis smtp worker postfix mailcatcher log
 down: ## Stop and remove the containers, keeping the data
 	docker compose down --remove-orphans

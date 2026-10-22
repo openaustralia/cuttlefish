@@ -7,11 +7,8 @@
 service=$1 what=$2
 shift 2
 limit=${START_LIMIT:-10m}
-case $limit in
-  *m) seconds=$((${limit%m} * 60)) ;;
-  *s) seconds=${limit%s} ;;
-  *) seconds=$limit ;;
-esac
+# A Compose duration such as 90s, 8m or 1h30m, turned into a sum such as 1*3600+30*60
+seconds=$(($(echo "$limit" | sed 's/h/*3600+/; s/m/*60+/; s/s/+/; s/+$//')))
 deadline=$(($(date +%s) + seconds))
 until "$@" >/dev/null 2>&1; do
   if [ "$(date +%s)" -ge "$deadline" ]; then

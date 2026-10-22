@@ -49,6 +49,11 @@ services:
       dockerfile: .devcontainer/Dockerfile
     env_file: app.env
     command: bundle exec rake cuttlefish:smtp
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     volumes:
       - ..:/app:cached
       # This needs to share the directory containing email content between
@@ -72,6 +77,11 @@ services:
       dockerfile: .devcontainer/Dockerfile
     env_file: app.env
     command: bundle exec sidekiq
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     volumes:
       - ..:/app:cached
       # This needs to share the directory containing email content between
@@ -114,6 +124,11 @@ services:
       dockerfile: .devcontainer/Dockerfile
     env_file: app.env
     command: bundle exec rake cuttlefish:log
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     volumes:
       - ..:/app:cached
       - ../postfix_log:/var/log:cached
