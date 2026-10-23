@@ -1,4 +1,0 @@
-test:
-  database: cuttlefish_test
-  adapter: postgresql
-  username: postgres

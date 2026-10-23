@@ -13,6 +13,9 @@
 
 # Ignore .env.development so people can set their own env variables
 .env.development
+# Per-checkout settings such as Docker host ports (see AGENTS.md), and direnv's .envrc
+.env
+.envrc
 
 cuttlefish.sublime-workspace
 db/emails/development

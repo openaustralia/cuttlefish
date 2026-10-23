@@ -22,7 +22,7 @@ Delivery.delete_all
 
 # Also need to delete the data cache because we're potentially recreating
 # emails with the same id but might have different content
-FileUtils.rm_r("db/emails")
+FileUtils.rm_rf("db/emails")
 
 # Came up with some names using https://www.name-generator.org.uk just in
 # case anyone thinks these names resemble real people or businesses.

@@ -1,0 +1,141 @@
+# The development stack, shared by `make`, plain `docker compose` (via ../compose.yaml) and the dev container.
+# See "Docker development environment" in AGENTS.md.
+services:
+  web:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    env_file: app.env
+    environment:
+      START_LIMIT: &start_limit ${START_LIMIT:-5m} # how long startup may take before it counts as failed; see "If the app won't start" in the README
+    volumes:
+      - ..:/app:cached
+    # Prepares the database on every start (a no-op once it's set up), so a fresh checkout comes up working.
+    command: sh -c "rm -f tmp/pids/server.pid && bin/rails db:prepare && bundle exec rails server -b 0.0.0.0"
+    # Host ports are overridable to avoid clashes, see "Port clashes" in AGENTS.md.
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "-o", "/dev/null", "http://localhost:3000/"]
+      interval: 5s
+      start_period: *start_limit
+    links:
+      - db
+      - redis
+      - smtp
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  db:
+    # Same version as production. A database volume from an older version won't start: `make clobber` once to reset it.
+    image: postgres:13.11
+    environment:
+      - POSTGRES_PASSWORD=cuttlefish
+    ports:
+      - "5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      retries: 60
+
+  smtp:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    env_file: app.env
+    command: bundle exec rake cuttlefish:smtp
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ..:/app:cached
+      # This needs to share the directory containing email content between
+      # smtp server and workers
+      - emails:/tmp
+    ports:
+      - "${SMTP_PORT:-2525}:2525"
+
+  redis:
+    image: redis:2.8 # production runs 2.8.9; 2.8.23 is the nearest image published
+    ports:
+      - "6379" # rarely needed from the host: a random port, see `make status`
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      retries: 30
+
+  worker:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    env_file: app.env
+    command: bundle exec sidekiq
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ..:/app:cached
+      # This needs to share the directory containing email content between
+      # smtp server and workers
+      - emails:/tmp
+    links:
+      - db
+      - redis
+      - postfix
+
+  postfix:
+    image: juanluisbaptiste/postfix
+    environment:
+      - SMTP_SERVER=mailcatcher
+      - SMTP_PORT=1025
+      # The username and password are actually ignore by mailcatcher but need
+      # to be set to keep this container happy
+      - SMTP_USERNAME=foo@bar.com
+      - SMTP_PASSWORD=XXXXXXXX
+      - SERVER_HOSTNAME=cuttlefish.io
+    volumes:
+      - ../postfix_log:/var/log:cached
+    links:
+      - mailcatcher
+
+  mailcatcher:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile.mailcatcher
+    ports:
+      - "${MAILCATCHER_PORT:-1080}:1080"
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://localhost:1080/"]
+      interval: 2s
+      retries: 30
+
+  log:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    env_file: app.env
+    command: bundle exec rake cuttlefish:log
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ..:/app:cached
+      - ../postfix_log:/var/log:cached
+    links:
+      - db
+
+volumes:
+  postgres_data:
+  # Email content shared between the smtp server and the workers
+  emails:

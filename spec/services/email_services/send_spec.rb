@@ -111,8 +111,9 @@ describe EmailServices::Send do
 
   context "when don't actually send anything" do
     before do
-      smtp = double(send_message: double(message: ""))
-      allow(Net::SMTP).to receive(:start).and_yield(smtp)
+      smtp = double(disable_starttls: nil)
+      allow(smtp).to receive(:start).and_yield(double(send_message: double(message: "")))
+      allow(Net::SMTP).to receive(:new).and_return(smtp)
     end
 
     it "records to which destinations the email has been sent" do

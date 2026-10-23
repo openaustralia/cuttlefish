@@ -106,7 +106,7 @@ gem "acme-client"
 
 group :development do
   gem "capistrano", "~> 2"
-  gem "capistrano-tagging"
+  gem "capistrano-tagging", require: false # loaded by the Capfile; it raises if required outside Capistrano
   gem "bcrypt_pbkdf", "~> 1.0"
   gem "ed25519", "~> 1.2"
   gem "faker"
