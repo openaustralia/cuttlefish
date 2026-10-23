@@ -71,15 +71,12 @@ point your web browser at http://localhost:3000. Run `make` to see the other tar
 `make clean` and `make clobber`. If a port is already in use, or you run more than one worktree at once, see
 [AGENTS.md](AGENTS.md#port-clashes).
 
-To add some example seed data, which also creates a site admin with email "joy@smart-unlimited.com" and password
-"password":
+A new database comes with example data from `db/seeds.rb`, so you can log in with the email "joy@smart-unlimited.com"
+and the password "password". If you've emptied the database, load it again with:
 
 ```
 docker compose exec web bundle exec rake db:seed
 ```
-
-If you've used the `db:seed` task to populate the development database you can now log in using the email "
-joy@smart-unlimited.com" with the password "password".
 
 For development all mail sent out by Cuttlefish will actually go to mailcatcher.
 To see the mailcatcher mail:
