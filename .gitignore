@@ -37,3 +37,9 @@ postfix_log/messages
 
 # Use .ansible directory as a virtualenv if you want
 .ansible
+
+# Claude Code's local per-project notes, settings, worktrees and scheduler lock
+/CLAUDE.local.md
+/.claude/*.local*
+/.claude/worktrees/
+/.claude/scheduled_tasks.*
